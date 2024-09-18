@@ -14,5 +14,6 @@
         android:textColor="@color/black"
         android:textSize="50sp"
         android:textStyle="bold"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

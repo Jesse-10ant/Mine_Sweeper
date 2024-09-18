@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         timerDisplay = findViewById(R.id.timerLabel);
         shovelToggle = findViewById(R.id.modeToggle);
 
+        shovelToggle.setOnClickListener(this::onShovelToggleClick);
         flag_count = FLAGS;
         updateFlagCount();
 
@@ -205,6 +206,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onShovelToggleClick(View view){
+        shovelSwitch();
+    }
     public void onClickTV(View view){
         TextView tv = (TextView) view;
         int n = findIndexOfCellTextView(tv);
@@ -221,6 +225,10 @@ public class MainActivity extends AppCompatActivity {
             }
             updateFlagCount();
         }else{
+            if (tv.getText().equals(getString(R.string.flag))) {
+                return;
+
+            }
             tv.setBackgroundColor(Color.GRAY);
             tv.setText(String.valueOf(i + j));
         }
