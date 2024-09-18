@@ -1,22 +1,17 @@
 package com.example.gridlayout;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 public class Block {
-    private int indx; //position of the block in the grid
+    private final int index; //position of the block in the grid
     private boolean isBomb; //is the bomb
-    private TextView text_view; //the view image it is showing
-    private Context context; //Connecter to the main
-    private MainActivity main; //reference to main
+    private final TextView text_view; //the view image it is showing
+    private final MainActivity main; //reference to main
 
-    public Block(int indx, TextView textView, Context context, MainActivity main){
-        this.indx = indx;
+    public Block(int index, TextView textView, MainActivity main){
+        this.index = index;
         this.text_view = textView;
-        this.context = context;
         this.main = main;
         this.isBomb = false;
         text_view.setBackgroundColor(Color.GREEN);
@@ -32,22 +27,24 @@ public class Block {
         return isBomb;
     }
 
-    //Clck handler
+    //Click handler
     //If the cube is a bomb end game
     //Else tell how many sides of it share with a bomb
     public void onClick(){
         if(isBomb){
             text_view.setText(R.string.mine);
             text_view.setBackgroundColor(Color.RED);
+            text_view.setEnabled(false);
             main.stopTimer();
-            //main.results();
+            main.explodeAllBombs();
         }else{
-            int adjacent_bombs = main.countAdjacentBombs(indx);
+            int adjacent_bombs = main.countAdjacentBombs(index);
             text_view.setText(String.valueOf(adjacent_bombs));
             text_view.setBackgroundColor(Color.GRAY);
             text_view.setEnabled(false);
             if(adjacent_bombs == 0){
-                main.revelSafeBlocks(indx);
+                text_view.setText("");
+                main.revelSafeBlocks(index);
             }
 
         }

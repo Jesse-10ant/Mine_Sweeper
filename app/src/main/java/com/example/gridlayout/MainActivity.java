@@ -3,6 +3,7 @@ package com.example.gridlayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,31 +20,31 @@ public class MainActivity extends AppCompatActivity {
     private static final int ROW_COUNT = 12;
     private static final int BOMBS = 4;
     private static final int FLAGS = BOMBS;
-    // save the TextViews of all cells in an array, so later on,
-    // when a TextView is clicked, we know which cell it is
+
     private ArrayList<Block> game_blocks;
 
     private TextView flagCountTextView;
     private TextView timerDisplay;
     private TextView shovelToggle;
+
     private Handler timer_handler;
+
     private Runnable timer_runner;
+
     private int second_elapsed = 0;
     private int flag_count = FLAGS;
     private boolean isFlagMode = false;
-    private boolean isDigging = false;
+    private boolean isGameActive = true;
 
     private int dpToPixel() {
         float density = Resources.getSystem().getDisplayMetrics().density;
         return Math.round(2 * density);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         flagCountTextView = findViewById(R.id.flagCount);
         timerDisplay = findViewById(R.id.timerLabel);
@@ -67,11 +68,6 @@ public class MainActivity extends AppCompatActivity {
         grid.setBackgroundColor(Color.GRAY);
 
         int total_cell = ROW_COUNT * COLUMN_COUNT;
-
-        //Testing
-       // grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
-       // grid.setBackgroundColor(Color.DKGRAY); // Ensure GridLayout is visible
-
         LayoutInflater li = LayoutInflater.from(this);
 
         List<TextView> block_text_view = new ArrayList<>();
@@ -95,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         for(int i =0; i < total_cell; i++){
-            Block block = new Block(i,block_text_view.get(i), this, this);
+            Block block = new Block(i, block_text_view.get(i), this);
             game_blocks.add(block);
         }
 
@@ -103,15 +99,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deployBombs(){
-        List<Integer> indx = new ArrayList<>();
+        List<Integer> index = new ArrayList<>();
         for(int i = 0; i < game_blocks.size(); i++){
-            indx.add(i);
+            index.add(i);
         }
-        Collections.shuffle(indx);
+        Collections.shuffle(index);
         for(int i = 0; i < BOMBS; i++){
-           Block block =  game_blocks.get(indx.get(i));
+           Block block =  game_blocks.get(index.get(i));
            block.giveBomb();
-            TextView tv = game_blocks.get(indx.get(i)).getTextView();
+            TextView tv = game_blocks.get(index.get(i)).getTextView();
             tv.setBackgroundColor(Color.CYAN);
 
         }
@@ -147,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopTimer(){
         timer_handler.removeCallbacks(timer_runner);
+        isGameActive = false;
     }
 
     private int findIndexOfCellTextView(TextView tv) {
@@ -157,17 +154,17 @@ public class MainActivity extends AppCompatActivity {
         return -1;
     }
 
-    public int countAdjacentBombs(int indx){
+    public int countAdjacentBombs(int index){
         int count =0;
-        int row = indx / COLUMN_COUNT;
-        int col = indx % COLUMN_COUNT;
+        int row = index / COLUMN_COUNT;
+        int col = index % COLUMN_COUNT;
 
         for(int i = row - 1; i <= row + 1; i++){
             for (int j = col - 1; j <= col + 1; j++){
                 if(i>=0 && i < ROW_COUNT && j >= 0 && j < COLUMN_COUNT){
                     if(i == row && j == col)continue;
                     int adjacent_blocks = i * COLUMN_COUNT + j;
-                    if(adjacent_blocks >= 0 && adjacent_blocks < game_blocks.size()){
+                    if(adjacent_blocks < game_blocks.size()){
                         if(game_blocks.get(adjacent_blocks).isBomb()){
                             count++;
                         }
@@ -178,23 +175,24 @@ public class MainActivity extends AppCompatActivity {
         return count;
     }
 
-    public void revelSafeBlocks(int indx){
-        int row = indx / COLUMN_COUNT;
-        int col = indx % COLUMN_COUNT;
+    public void revelSafeBlocks(int index){
+        int row = index / COLUMN_COUNT;
+        int col = index % COLUMN_COUNT;
 
         for(int i = row - 1; i <= (row + 1); i++){
-            for(int j = col - 1; j <= col + 1; i++){
-                if(i >= 0 && i < ROW_COUNT && j<=0 && j < COLUMN_COUNT){
-                    int adjacent_indx = i * COLUMN_COUNT + j;
-                    Block adjacent_block = game_blocks.get((adjacent_indx));
+            for(int j = col - 1; j <= col + 1; j++){
+                if(i >= 0 && i < ROW_COUNT && j>=0 && j < COLUMN_COUNT){
+                    int adjacent_index = i * COLUMN_COUNT + j;
+                    Block adjacent_block = game_blocks.get((adjacent_index));
                     TextView tv = adjacent_block.getTextView();
                     if(!adjacent_block.isBomb() && tv.isEnabled()){
-                        int bomb_count = countAdjacentBombs(adjacent_indx);
+                        int bomb_count = countAdjacentBombs(adjacent_index);
                         tv.setText(String.valueOf(bomb_count));
                         tv.setBackgroundColor(Color.GRAY);
                         tv.setEnabled(false);
                         if(bomb_count == 0){
-                            revelSafeBlocks(adjacent_indx);
+                            tv.setText("");
+                            revelSafeBlocks(adjacent_index);
                         }
                     }
                 }
@@ -202,19 +200,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void gameOver(){
-
-    }
-
     public void onShovelToggleClick(View view){
         shovelSwitch();
     }
+
+    public void explodeAllBombs(){
+        for(int i = 0; i < game_blocks.size(); i++){
+           Block block =  game_blocks.get(i);
+            if(block.isBomb()){
+              TextView text_view = block.getTextView();
+              text_view.setText(R.string.mine);
+              text_view.setBackgroundColor(Color.RED);
+              text_view.setEnabled(false);
+            }
+        }
+    }
+
     public void onClickTV(View view){
+      /*  if(!isGameActive){
+            Intent intent = new Intent(this , ResultsActivity.class);
+            Bundle time_elapsed = getIntent().getExtras();
+            if (time_elapsed != null) {
+                time_elapsed.putInt("time_elapsed",second_elapsed);
+            }
+            if (time_elapsed != null) {
+                intent.putExtras(time_elapsed);
+            }
+            MainActivity.this.startActivity(intent);
+        } */
         TextView tv = (TextView) view;
         int n = findIndexOfCellTextView(tv);
-        int i = n/COLUMN_COUNT;
-        int j = n%COLUMN_COUNT;
-
+        Block block = game_blocks.get(n);
         if(isFlagMode) {
             if (tv.getText().equals(getString(R.string.flag))) {
                 tv.setText("");
@@ -227,10 +243,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             if (tv.getText().equals(getString(R.string.flag))) {
                 return;
-
+            }else{
+                block.onClick();
             }
             tv.setBackgroundColor(Color.GRAY);
-            tv.setText(String.valueOf(i + j));
         }
 
     }
