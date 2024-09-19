@@ -41,7 +41,6 @@ public class Block {
             int adjacent_bombs = main.countAdjacentBombs(index);
             text_view.setText(String.valueOf(adjacent_bombs));
             text_view.setBackgroundColor(Color.GRAY);
-            text_view.setEnabled(false);
             if(adjacent_bombs == 0){
                 text_view.setText("");
                 main.revelSafeBlocks(index);

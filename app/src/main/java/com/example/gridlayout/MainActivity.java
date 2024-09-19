@@ -9,6 +9,7 @@ import android.graphics.Color;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isFlagMode = false;
     private boolean isGameActive = true;
     private boolean isWinner = true;
-
+    private boolean goToResults = false;
     private int dpToPixel() {
         float density = Resources.getSystem().getDisplayMetrics().density;
         return Math.round(2 * density);
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
             Block block = new Block(i, block_text_view.get(i), this);
             game_blocks.add(block);
         }
-
         deployBombs();
     }
 
@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
            block.giveBomb();
             TextView tv = game_blocks.get(index.get(i)).getTextView();
             tv.setBackgroundColor(Color.CYAN);
-
         }
     }
 
@@ -128,12 +127,14 @@ public class MainActivity extends AppCompatActivity {
     public void updateFlagCount(){
         flagCountTextView.setText(String.valueOf(flag_count));
     }
+
     public void updateRevealCount(){
         revealed_blocks++;
-        if(revealed_blocks >= COLUMN_COUNT * ROW_COUNT){
+        if(revealed_blocks >= COLUMN_COUNT * ROW_COUNT - BOMBS){
             isGameActive = false;
         }
     }
+
     public void startTimer(){
         timer_runner = new Runnable() {
             @Override
@@ -149,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopTimer(){
         timer_handler.removeCallbacks(timer_runner);
-        isGameActive = false;
     }
 
     private int findIndexOfCellTextView(TextView tv) {
@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
         int count =0;
         int row = index / COLUMN_COUNT;
         int col = index % COLUMN_COUNT;
-
         for(int i = row - 1; i <= row + 1; i++){
             for (int j = col - 1; j <= col + 1; j++){
                 if(i>=0 && i < ROW_COUNT && j >= 0 && j < COLUMN_COUNT){
@@ -184,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
     public void revelSafeBlocks(int index){
         int row = index / COLUMN_COUNT;
         int col = index % COLUMN_COUNT;
-
         for(int i = row - 1; i <= (row + 1); i++){
             for(int j = col - 1; j <= col + 1; j++){
                 if(i >= 0 && i < ROW_COUNT && j>=0 && j < COLUMN_COUNT){
@@ -196,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         tv.setText(String.valueOf(bomb_count));
                         tv.setBackgroundColor(Color.GRAY);
                         tv.setEnabled(false);
+                        updateRevealCount();
                         if(bomb_count == 0){
                             tv.setText("");
                             revelSafeBlocks(adjacent_index);
@@ -221,25 +220,32 @@ public class MainActivity extends AppCompatActivity {
             isWinner = false;
         }
     }
-
-    public void gameOver(){
-        explodeAllBombs();
-        stopTimer();
-        isGameActive = false;
+    
+    public void launchResults(){
+        Intent intent = new Intent(this , ResultsActivity.class);
+        intent.putExtra("time_elapsed",second_elapsed);
+        intent.putExtra("winner",isWinner);
+        startActivity(intent);
+        finish();
     }
-
+    
     public void onClickTV(View view){
-       if(!isGameActive){
-            Intent intent = new Intent(this , ResultsActivity.class);
-            intent.putExtra("time_elapsed",second_elapsed);
-            intent.putExtra("winner",isWinner);
-            startActivity(intent);
-            finish();
-            return;
+       if(!isGameActive ){
+           stopTimer();
+           if(goToResults){
+               launchResults();
+           }else{
+               goToResults = true;
+               for (Block block : game_blocks){
+                   block.getTextView().setEnabled(true);
+               }
+           }
         }
+
         TextView tv = (TextView) view;
         int n = findIndexOfCellTextView(tv);
         Block block = game_blocks.get(n);
+        
         if(isFlagMode) {
             if (tv.getText().equals(getString(R.string.flag))) {
                 tv.setText("");
