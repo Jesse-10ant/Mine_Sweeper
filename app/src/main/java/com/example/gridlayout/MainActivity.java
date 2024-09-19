@@ -207,17 +207,17 @@ public class MainActivity extends AppCompatActivity {
     public void explodeAllBombs(){
         for(int i = 0; i < game_blocks.size(); i++){
            Block block =  game_blocks.get(i);
+           TextView text_view = block.getTextView();
             if(block.isBomb()){
-              TextView text_view = block.getTextView();
               text_view.setText(R.string.mine);
               text_view.setBackgroundColor(Color.RED);
-              text_view.setEnabled(false);
             }
+            //text_view.setEnabled(false);
         }
     }
 
     public void onClickTV(View view){
-      /*  if(!isGameActive){
+       if(!isGameActive){
             Intent intent = new Intent(this , ResultsActivity.class);
             Bundle time_elapsed = getIntent().getExtras();
             if (time_elapsed != null) {
@@ -226,8 +226,10 @@ public class MainActivity extends AppCompatActivity {
             if (time_elapsed != null) {
                 intent.putExtras(time_elapsed);
             }
-            MainActivity.this.startActivity(intent);
-        } */
+            startActivity(intent);
+            finish();
+            return;
+        }
         TextView tv = (TextView) view;
         int n = findIndexOfCellTextView(tv);
         Block block = game_blocks.get(n);
