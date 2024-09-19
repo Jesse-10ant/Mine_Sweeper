@@ -31,10 +31,10 @@ public class Block {
     //If the cube is a bomb end game
     //Else tell how many sides of it share with a bomb
     public void onClick(){
+        main.updateRevealCount();
         if(isBomb){
             text_view.setText(R.string.mine);
             text_view.setBackgroundColor(Color.RED);
-            text_view.setEnabled(false);
             main.stopTimer();
             main.explodeAllBombs();
         }else{

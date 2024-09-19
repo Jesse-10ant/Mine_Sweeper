@@ -17,20 +17,20 @@ public class ResultsActivity extends AppCompatActivity {
         super.onCreate(time_elapsed);
         setContentView(R.layout.results_activity);
 
-
         TextView top_result = findViewById(R.id.top_message);
         TextView center_result = findViewById(R.id.center_message);
         TextView bottom_result = findViewById(R.id.bottom_message);
         Button restart_button = findViewById(R.id.restart_button);
 
-        int seconds_used = getIntent().getIntExtra("time_elapsed",0);
-        String result = getIntent().getStringExtra("result");
+        Intent intent = getIntent();
+        int seconds_used = intent.getIntExtra("time_elapsed",0);
+        boolean isWinner = intent.getBooleanExtra("winner",true);
 
 
         String time_used_str = "Used " + seconds_used + " seconds";
         top_result.setText(time_used_str);
 
-        if("win".equals(result)){
+        if(isWinner){
             center_result.setText("You Won");
             bottom_result.setText("Good Job!");
         }else{

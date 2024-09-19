@@ -6,6 +6,7 @@ import androidx.gridlayout.widget.GridLayout;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -28,13 +29,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView shovelToggle;
 
     private Handler timer_handler;
-
     private Runnable timer_runner;
 
     private int second_elapsed = 0;
+    private int revealed_blocks = 0;
     private int flag_count = FLAGS;
     private boolean isFlagMode = false;
     private boolean isGameActive = true;
+    private boolean isWinner = true;
 
     private int dpToPixel() {
         float density = Resources.getSystem().getDisplayMetrics().density;
@@ -53,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         shovelToggle.setOnClickListener(this::onShovelToggleClick);
         flag_count = FLAGS;
         updateFlagCount();
-
 
         timer_handler = new Handler();
         startTimer();
@@ -127,7 +128,12 @@ public class MainActivity extends AppCompatActivity {
     public void updateFlagCount(){
         flagCountTextView.setText(String.valueOf(flag_count));
     }
-
+    public void updateRevealCount(){
+        revealed_blocks++;
+        if(revealed_blocks >= COLUMN_COUNT * ROW_COUNT){
+            isGameActive = false;
+        }
+    }
     public void startTimer(){
         timer_runner = new Runnable() {
             @Override
@@ -212,20 +218,21 @@ public class MainActivity extends AppCompatActivity {
               text_view.setText(R.string.mine);
               text_view.setBackgroundColor(Color.RED);
             }
-            //text_view.setEnabled(false);
+            isWinner = false;
         }
+    }
+
+    public void gameOver(){
+        explodeAllBombs();
+        stopTimer();
+        isGameActive = false;
     }
 
     public void onClickTV(View view){
        if(!isGameActive){
             Intent intent = new Intent(this , ResultsActivity.class);
-            Bundle time_elapsed = getIntent().getExtras();
-            if (time_elapsed != null) {
-                time_elapsed.putInt("time_elapsed",second_elapsed);
-            }
-            if (time_elapsed != null) {
-                intent.putExtras(time_elapsed);
-            }
+            intent.putExtra("time_elapsed",second_elapsed);
+            intent.putExtra("winner",isWinner);
             startActivity(intent);
             finish();
             return;
@@ -245,11 +252,11 @@ public class MainActivity extends AppCompatActivity {
         }else{
             if (tv.getText().equals(getString(R.string.flag))) {
                 return;
-            }else{
+            }else {
                 block.onClick();
             }
-            tv.setBackgroundColor(Color.GRAY);
+                    tv.setBackgroundColor(Color.GRAY);
         }
-
     }
 }
+
