@@ -9,7 +9,6 @@ import android.graphics.Color;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -109,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
            Block block =  game_blocks.get(index.get(i));
            block.giveBomb();
             TextView tv = game_blocks.get(index.get(i)).getTextView();
-            tv.setBackgroundColor(Color.CYAN);
         }
     }
 
@@ -218,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
               text_view.setBackgroundColor(Color.RED);
             }
             isWinner = false;
+            isGameActive = false;
+            goToResults = true;
+
         }
     }
     
@@ -230,10 +231,11 @@ public class MainActivity extends AppCompatActivity {
     }
     
     public void onClickTV(View view){
-       if(!isGameActive ){
+       if(!isGameActive && !isFlagMode ){
            stopTimer();
            if(goToResults){
                launchResults();
+               return;
            }else{
                goToResults = true;
                for (Block block : game_blocks){
@@ -260,8 +262,10 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }else {
                 block.onClick();
-            }
+                if(!block.isBomb()){
                     tv.setBackgroundColor(Color.GRAY);
+                }
+            }
         }
     }
 }

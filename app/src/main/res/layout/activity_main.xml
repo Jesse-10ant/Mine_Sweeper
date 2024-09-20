@@ -25,18 +25,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/flag"
-            android:textSize="24sp"
-            android:textColor="@android:color/black" />
-
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
         <!-- FLAG COUNT -->
         <TextView
             android:id="@+id/flagCount"
-            android:layout_width="wrap_content"
+            android:layout_width="82dp"
             android:layout_height="wrap_content"
-            android:text="@string/flag_count"
-            android:textSize="24sp"
             android:layout_marginStart="8dp"
-            android:textColor="@android:color/black" />
+            android:text="@string/flag_count"
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
 
         <!-- CLOCK SYMBOL -->
         <TextView
@@ -44,20 +43,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/clock"
-            android:textSize="24sp"
-            android:textColor="@android:color/black"/>
-
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
         <!-- CLOCK TIME  -->
         <TextView
             android:id="@+id/timerLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
-            android:textSize="24sp"
             android:layout_marginStart="8dp"
-            android:textColor="@android:color/black" />
+            android:text="0"
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
 
     </LinearLayout>
+
+
+
 
     <!-- MINE FIELD -->
     <androidx.gridlayout.widget.GridLayout

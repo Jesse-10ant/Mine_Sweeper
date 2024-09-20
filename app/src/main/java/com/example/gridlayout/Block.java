@@ -14,7 +14,7 @@ public class Block {
         this.text_view = textView;
         this.main = main;
         this.isBomb = false;
-        text_view.setBackgroundColor(Color.GREEN);
+        text_view.setBackgroundColor(Color.parseColor("#46FA00"));
     }
 
     //Set cube with bomb
