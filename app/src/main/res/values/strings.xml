@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">CS 310 Jesse Tennant</string>
-
+    <string name="restart_button">Restart Game</string>
     <string name="clock">\uD83D\uDD53</string>
     <string name="flag">\uD83D\uDEA9</string>
     <string name="mine">\uD83D\uDCA3</string>
     <string name="pick">\u26CF</string>
     <string name="flag_count"> 4 </string>
 
-</resources>
+</resources> 

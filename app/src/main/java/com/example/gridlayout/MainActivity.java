@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         GridLayout grid = findViewById(R.id.gridLayout01);
         grid.setUseDefaultMargins(true);
         grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
-        grid.setBackgroundColor(Color.GRAY);
+        grid.setBackgroundColor(Color.WHITE);
 
         int total_cell = ROW_COUNT * COLUMN_COUNT;
         LayoutInflater li = LayoutInflater.from(this);
@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < BOMBS; i++){
            Block block =  game_blocks.get(index.get(i));
            block.giveBomb();
-            TextView tv = game_blocks.get(index.get(i)).getTextView();
         }
     }
 
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateRevealCount(){
         revealed_blocks++;
-        if(revealed_blocks >= COLUMN_COUNT * ROW_COUNT - BOMBS){
+        if(revealed_blocks == COLUMN_COUNT * ROW_COUNT - BOMBS){
             isGameActive = false;
         }
     }
@@ -207,6 +206,12 @@ public class MainActivity extends AppCompatActivity {
         shovelSwitch();
     }
 
+    public void enableGrid(){
+        for (Block block : game_blocks){
+            block.getTextView().setEnabled(true);
+        }
+    }
+
     public void explodeAllBombs(){
         for(int i = 0; i < game_blocks.size(); i++){
            Block block =  game_blocks.get(i);
@@ -218,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
             isWinner = false;
             isGameActive = false;
             goToResults = true;
+            enableGrid();
 
         }
     }
@@ -238,9 +244,7 @@ public class MainActivity extends AppCompatActivity {
                return;
            }else{
                goToResults = true;
-               for (Block block : game_blocks){
-                   block.getTextView().setEnabled(true);
-               }
+               enableGrid();
            }
         }
 
@@ -258,9 +262,7 @@ public class MainActivity extends AppCompatActivity {
             }
             updateFlagCount();
         }else{
-            if (tv.getText().equals(getString(R.string.flag))) {
-                return;
-            }else {
+            if (!tv.getText().equals(getString(R.string.flag))) {
                 block.onClick();
                 if(!block.isBomb()){
                     tv.setBackgroundColor(Color.GRAY);

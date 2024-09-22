@@ -27,6 +27,7 @@
             android:text="@string/flag"
             android:textColor="@android:color/black"
             android:textSize="24sp" />
+
         <!-- FLAG COUNT -->
         <TextView
             android:id="@+id/flagCount"
@@ -45,6 +46,7 @@
             android:text="@string/clock"
             android:textColor="@android:color/black"
             android:textSize="24sp" />
+
         <!-- CLOCK TIME  -->
         <TextView
             android:id="@+id/timerLabel"
@@ -57,9 +59,6 @@
 
     </LinearLayout>
 
-
-
-
     <!-- MINE FIELD -->
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/gridLayout01"
@@ -68,6 +67,7 @@
         android:layout_margin="16dp"
         app:rowCount="12"
         app:columnCount="10"
+        android:textAlignment="center"
         android:background="@android:color/darker_gray"
         app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintBottom_toTopOf="@id/bottomBar"
